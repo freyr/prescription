@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Issuing\Core;
 
-use Freyr\Prescription\Issuing\Core\Issuer\Issuer;
+use Freyr\Prescription\Issuing\Core\Medicine\Dosage;
+use Freyr\Prescription\Issuing\Core\Physician\PhysicianId;
 
 interface IssuePrescription
 {
 
-    public function getIssuer(): Issuer;
-
     public function getPatientPesel(): Pesel;
 
-    public function getMedicationId(): MedicationId;
+    /**
+     * @return array<int, Dosage>
+     */
+    public function getDosages(): array;
 
-    public function getQuantity(): int;
+    public function getPhysicianId(): PhysicianId;
 }

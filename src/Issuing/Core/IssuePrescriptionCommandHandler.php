@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Issuing\Core;
 
+use Freyr\Prescription\Issuing\Core\Medicine\MedicineRepository;
 use Freyr\Prescription\Issuing\Core\Patient\PatientRepository;
+use Freyr\Prescription\Issuing\Core\Physician\PhysicianRepository;
 use Freyr\Prescription\Issuing\Core\Prescription\Prescription;
+use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionRepository;
 use RuntimeException;
 
 final readonly class IssuePrescriptionCommandHandler
@@ -13,9 +16,9 @@ final readonly class IssuePrescriptionCommandHandler
 
     public function __construct(
         private PatientRepository $patientRepository,
-        private MedicationRepository $medicationRepository,
+        private MedicineRepository $medicineRepository,
         private PrescriptionRepository $prescriptionRepository,
-        private DoctorPermissionRepository $doctorPermissionRepository
+        private PhysicianRepository $physicianRepository
     )
     {
 
@@ -23,17 +26,14 @@ final readonly class IssuePrescriptionCommandHandler
     public function __invoke(IssuePrescription $command): void
     {
         $patient = $this->patientRepository->findByPesel($command->getPatientPesel());
-        if (!$patient->isInsured()) {
-            throw new RuntimeException('Patient is not insured');
-        }
+        $physician = $this->physicianRepository->getById($command->getPhysicianId());
 
-        $medication = $this->medicationRepository->getById($command->getMedicationId());
-        $issuer = $command->getIssuer();
-        if (!$this->doctorPermissionRepository->canIssue($issuer, $patient, $medication)) {
-            throw new RuntimeException('Cannot issue prescription for medication');
-        }
-
-        $prescription = Prescription::issue($patient, $issuer, $medication, $command->getQuantity());
+        $prescription = Prescription::issue(
+            $this->medicineRepository,
+            $patient,
+            $physician,
+            ...$command->getDosages()
+        );
 
         $this->prescriptionRepository->persist($prescription);
     }

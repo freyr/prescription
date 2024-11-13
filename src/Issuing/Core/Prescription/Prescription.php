@@ -7,30 +7,52 @@ namespace Freyr\Prescription\Issuing\Core\Prescription;
 use Freyr\Prescription\EventSourcing\AggregateChanged;
 use Freyr\Prescription\EventSourcing\AggregateRoot;
 use Freyr\Prescription\Issuing\Core\CancelPrescription;
-use Freyr\Prescription\Issuing\Core\CannotCancelPrescriptionException;
-use Freyr\Prescription\Issuing\Core\Issuer\Issuer;
-use Freyr\Prescription\Issuing\Core\Medication\Medication;
+use Freyr\Prescription\Issuing\Core\Medicine\Dosage;
+use Freyr\Prescription\Issuing\Core\Medicine\MedicineRepository;
 use Freyr\Prescription\Issuing\Core\Patient\Patient;
-use Freyr\Prescription\Issuing\Core\PrescriptionId;
+use Freyr\Prescription\Issuing\Core\Physician\Physician;
+use RuntimeException;
 
 class Prescription extends AggregateRoot
 {
 
     private int $code;
+    /**
+     * @var Dosage[]
+     */
+    private array $dosages;
 
     public function __construct(
         readonly private PrescriptionId $id,
         readonly private Patient $patient,
-        readonly private Issuer $issuer,
+        readonly private Physician $physician,
         private PrescriptionStatus $status = PrescriptionStatus::ISSUED,
+        Dosage ...$dosages,
     ) {
         $this->code = rand(1, 9999);
+        $this->dosages = $dosages;
     }
 
-    public static function issue(Patient $patient, Issuer $issuer, Medication $medication, int $quantity)
+    public static function issue(
+        MedicineRepository $medicineRepository,
+        Patient $patient,
+        Physician $physician,
+        Dosage ...$dosages,
+    ): self
     {
-        $prescription = new self(new PrescriptionId(), $patient, $issuer, PrescriptionStatus::ISSUED);
-        $prescription->addMedication($medication, $quantity);
+        foreach ($dosages as $dosage) {
+            if (!$medicineRepository->check($dosage)) {
+                throw new RuntimeException('Incorrect medicine');
+            }
+        }
+
+        $prescription = new self(
+            new PrescriptionId(),
+            $patient,
+            $physician,
+            PrescriptionStatus::ISSUED,
+            ...$dosage,
+        );
         $prescription->recordThat(
             new PrescriptionIssued(
                 $prescription->aggregateId(),
@@ -43,21 +65,12 @@ class Prescription extends AggregateRoot
         return $prescription;
     }
 
-    private function addMedication(Medication $medication, int $getQuantity)
-    {
-    }
-
     public function cancel(CancelPrescription $command): void
     {
-        if ($this->issuer !== $command->getIssuer()) {
+        if ($this->physician !== $command->getPhysician()) {
             throw new CannotCancelPrescriptionException();
         }
         $this->status = PrescriptionStatus::CANCELLED;
-    }
-
-    public function canBeExecuted(): bool
-    {
-        return $this->status !== PrescriptionStatus::CANCELLED;
     }
 
     public function aggregateId(): string

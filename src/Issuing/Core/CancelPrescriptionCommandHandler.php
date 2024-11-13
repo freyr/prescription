@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Issuing\Core;
 
-class CancelPrescriptionCommandHandler
+use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionRepository;
+
+final readonly class CancelPrescriptionCommandHandler
 {
 
     public function __construct(
@@ -14,11 +16,6 @@ class CancelPrescriptionCommandHandler
 
     }
 
-    /**
-     * @param CancelPrescription $command
-     * @return void
-     * @throws CannotCancelPrescriptionException
-     */
     public function __invoke(CancelPrescription $command): void
     {
         $prescription = $this->prescriptionRepository->loadById($command->prescriptionId());
