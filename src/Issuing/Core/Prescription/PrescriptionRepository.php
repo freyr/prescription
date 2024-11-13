@@ -11,5 +11,5 @@ interface PrescriptionRepository
 
     public function persist(Prescription $prescription): void;
 
-    public function loadById($prescriptionId): Prescription;
+    public function loadById(PrescriptionId $prescriptionId): Prescription;
 }

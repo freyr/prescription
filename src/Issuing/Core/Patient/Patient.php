@@ -11,4 +11,9 @@ class Patient
     {
 
     }
+
+    public function getId(): string
+    {
+
+    }
 }

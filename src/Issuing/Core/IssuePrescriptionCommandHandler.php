@@ -33,8 +33,7 @@ final readonly class IssuePrescriptionCommandHandler
             throw new RuntimeException('Cannot issue prescription for medication');
         }
 
-        $prescription = new Prescription($patient, $issuer);
-        $prescription->addMedication($medication, $command->getQuantity());
+        $prescription = Prescription::issue($patient, $issuer, $medication, $command->getQuantity());
 
         $this->prescriptionRepository->persist($prescription);
     }
