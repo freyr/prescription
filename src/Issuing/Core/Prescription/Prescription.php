@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Issuing\Core\Prescription;
 
+use Freyr\Prescription\Issuing\Core\CancelPrescription;
+use Freyr\Prescription\Issuing\Core\CannotCancelPrescriptionException;
 use Freyr\Prescription\Issuing\Core\ChangePrescription;
 use Freyr\Prescription\Issuing\Core\Issuer\Issuer;
 use Freyr\Prescription\Issuing\Core\Medication\Medication;
@@ -13,8 +15,9 @@ class Prescription
 {
 
     public function __construct(
-        private Patient $patient,
-        private Issuer $issuer
+        readonly private Patient $patient,
+        readonly private Issuer $issuer,
+        private PrescriptionStatus $status = PrescriptionStatus::ISSUED,
     )
     {
     }
@@ -24,17 +27,17 @@ class Prescription
 
     }
 
-    public function createBasedOn(ChangePrescription $prescription): self
+    public function cancel(CancelPrescription $command): void
     {
-        $new = new self($this->patient, $this->issuer);
+        if ($this->issuer !== $command->getIssuer()) {
+            throw new CannotCancelPrescriptionException();
+        }
+        $this->status = PrescriptionStatus::CANCELLED;
 
-        $this->cancel();
-
-        return $new;
     }
 
-    private function cancel()
+    public function canBeExecuted(): bool
     {
-
+        return $this->status !== PrescriptionStatus::CANCELLED;
     }
 }
