@@ -87,6 +87,8 @@ class PrescriptionTest extends TestCase
             ->method('check')
             ->willReturn(true);
 
+        $this->expectException(EmptyDosageException::class);
+
         $patient = new Patient();
         $physician = new Physician();
         $dosages = [];
@@ -98,8 +100,5 @@ class PrescriptionTest extends TestCase
             $physician,
             ...$dosages
         );
-
-        // then
-        self::assertNotNull($response);
     }
 }
