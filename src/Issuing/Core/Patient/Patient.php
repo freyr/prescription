@@ -7,13 +7,18 @@ namespace Freyr\Prescription\Issuing\Core\Patient;
 class Patient
 {
 
+    public function __construct(private PatientId $id)
+    {
+
+    }
+
     public function isInsured(): bool
     {
         return true;
     }
 
-    public function getId(): string
+    public function getId(): PatientId
     {
-        return '';
+        return $this->id;
     }
 }

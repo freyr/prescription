@@ -12,27 +12,28 @@ use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionRepository;
 class PrescriptionInMemoryRepository implements PrescriptionRepository
 {
 
-    public function __construct(private EventEmitter $emitter)
+    public array $events = [];
+
+    public function __construct()
     {
 
     }
-    private array $prescriptions = [];
+    public array $prescriptions = [];
 
     public function persist(Prescription $prescription): void
     {
-        $this->prescriptions[$prescription->aggregateId()] = $prescription;
+        $this->prescriptions[(string) $prescription->id] = $prescription;
         $eventExtractor = fn() => $this->popRecordedEvents();
 
         $events = $eventExtractor->call($prescription);
-
+        $this->events = $events;
         /** @var AggregateChanged $event */
         foreach ($events as $event) {
             $publicEvent = new PrescriptionIssuedIntegrationEvent(
-                $prescription->aggregateId(),
+            (string) $prescription->id,
                 $event->field('patientId'),
                 $event->field('code'),
             );
-            $this->emitter->emit($publicEvent);
         }
         //commit
 
