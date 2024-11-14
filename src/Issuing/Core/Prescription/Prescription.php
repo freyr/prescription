@@ -40,6 +40,10 @@ class Prescription extends AggregateRoot
         Dosage ...$dosages,
     ): self
     {
+        if (empty($dosages)) {
+            throw new RuntimeException('Dosages should not be empty.');
+        }
+
         foreach ($dosages as $dosage) {
             if (!$medicineRepository->check($dosage)) {
                 throw new RuntimeException('Incorrect medicine');

@@ -8,5 +8,5 @@ namespace Freyr\Prescription\Issuing\Core\Medicine;
 interface MedicineRepository
 {
 
-    public function check(Dosage $dosage): bool;
+    public function check(Dosage ...$dosage): bool;
 }

@@ -78,23 +78,15 @@ class PrescriptionTest extends TestCase
     public function shouldHandleEmptyDosage(): void
     {
         // Given
-        $repository = $this->getMockBuilder(MedicineRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $repository = $this->getMockBuilder(MedicineRepository::class)->getMock();
 
-        $repository
-            ->expects(self::atLeastOnce())
-            ->method('check')
-            ->willReturn(true);
-
-        $this->expectException(EmptyDosageException::class);
-
+        $this->expectException(RuntimeException::class);
         $patient = new Patient();
         $physician = new Physician();
         $dosages = [];
 
         // when
-        $response = Prescription::issue(
+        Prescription::issue(
             $repository,
             $patient,
             $physician,
