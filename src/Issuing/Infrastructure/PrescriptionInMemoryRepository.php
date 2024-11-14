@@ -27,15 +27,15 @@ class PrescriptionInMemoryRepository implements PrescriptionRepository
 
         $events = $eventExtractor->call($prescription);
         $this->events = $events;
-        /** @var AggregateChanged $event */
-        foreach ($events as $event) {
-            $publicEvent = new PrescriptionIssuedIntegrationEvent(
-            (string) $prescription->id,
-                $event->field('patientId'),
-                $event->field('code'),
-            );
-        }
-        //commit
+//        /** @var AggregateChanged $event */
+//        foreach ($events as $event) {
+//            $publicEvent = new PrescriptionIssuedIntegrationEvent(
+//            (string) $prescription->id,
+//                $event->field('patientId'),
+//                $event->field('code'),
+//            );
+//        }
+//        //commit
 
     }
 

@@ -61,7 +61,7 @@ class Prescription extends AggregateRoot
             PrescriptionIssued::occur(
                 $prescription->id,
                 [
-                    'patientId' => $patient->getId(),
+                    'patientId' => (string) $patient->getId(),
                     'code' => $prescription->code
                 ]
             )
@@ -75,6 +75,15 @@ class Prescription extends AggregateRoot
             throw new CannotCancelPrescriptionException();
         }
         $this->status = PrescriptionStatus::CANCELLED;
+        $this->recordThat(
+        PrescriptionCanceled::occur(
+            $this->id,
+            [
+                'patientId' => (string) $this->patient->getId(),
+                'status' => $this->status->value
+            ]
+        )
+    );
     }
 
     protected function apply(AggregateChanged $event): void

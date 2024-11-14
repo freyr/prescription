@@ -6,10 +6,10 @@ namespace Freyr\Prescription\Tests\Issuing\Core\Prescription;
 
 use Freyr\Prescription\Issuing\Application\FakePrescriptionIssue;
 use Freyr\Prescription\Issuing\Core\IssuePrescriptionCommandHandler;
-use Freyr\Prescription\Issuing\Core\Medicine\Medicine;
 use Freyr\Prescription\Issuing\Core\Medicine\MedicineRepository;
 use Freyr\Prescription\Issuing\Core\Patient\PatientRepository;
 use Freyr\Prescription\Issuing\Core\Physician\Physician;
+use Freyr\Prescription\Issuing\Core\Physician\PhysicianId;
 use Freyr\Prescription\Issuing\Core\Physician\PhysicianRepository;
 use Freyr\Prescription\Issuing\Core\Prescription\Prescription;
 use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionIssued;
@@ -30,7 +30,7 @@ class IssuePrescriptionCommandHandlerTest extends TestCase
     {
         $patientRepository = $this->getMockBuilder(PatientRepository::class)->getMock();
         $physicianRepository = $this->getMockBuilder(PhysicianRepository::class)->getMock();;
-        $physicianRepository->expects($this->once())->method('getById')->willReturn(new Physician());
+        $physicianRepository->expects($this->once())->method('getById')->willReturn(new Physician(PhysicianId::new()));
         $medicineRepository = $this->getMockBuilder(MedicineRepository::class)->getMock();
         $medicineRepository->expects($this->once())->method('check')->willReturn(true);
         $prescriptionRepository = new PrescriptionInMemoryRepository();
@@ -40,9 +40,7 @@ class IssuePrescriptionCommandHandlerTest extends TestCase
             $prescriptionRepository,
             $physicianRepository
         );
-        $command = new FakePrescriptionIssue(
-
-        );
+        $command = new FakePrescriptionIssue();
 
         // when
         $commandHandler($command);

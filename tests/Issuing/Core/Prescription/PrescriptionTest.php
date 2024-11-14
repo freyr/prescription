@@ -8,7 +8,9 @@ use Freyr\Prescription\Issuing\Core\Medicine\Dosage;
 use Freyr\Prescription\Issuing\Core\Medicine\MedicineId;
 use Freyr\Prescription\Issuing\Core\Medicine\MedicineRepository;
 use Freyr\Prescription\Issuing\Core\Patient\Patient;
+use Freyr\Prescription\Issuing\Core\Patient\PatientId;
 use Freyr\Prescription\Issuing\Core\Physician\Physician;
+use Freyr\Prescription\Issuing\Core\Physician\PhysicianId;
 use Freyr\Prescription\Issuing\Core\Prescription\Prescription;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -53,8 +55,8 @@ class PrescriptionTest extends TestCase
             $this->expectException(RuntimeException::class);
         }
 
-        $patient = new Patient();
-        $physician = new Physician();
+        $patient = new Patient(PatientId::new());
+        $physician = new Physician(PhysicianId::new());
         $dosages = [
             new Dosage(MedicineId::new(), '', 1, 10)
         ];
@@ -81,8 +83,8 @@ class PrescriptionTest extends TestCase
         $repository = $this->getMockBuilder(MedicineRepository::class)->getMock();
 
         $this->expectException(RuntimeException::class);
-        $patient = new Patient();
-        $physician = new Physician();
+        $patient = new Patient(PatientId::new());
+        $physician = new Physician(PhysicianId::new());
         $dosages = [];
 
         // when

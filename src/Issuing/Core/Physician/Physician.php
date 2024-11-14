@@ -6,5 +6,8 @@ namespace Freyr\Prescription\Issuing\Core\Physician;
 
 class Physician
 {
+    public function __construct(public readonly PhysicianId $id)
+    {
 
+    }
 }
