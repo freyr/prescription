@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Freyr\Prescription\Issuing\Core;
+namespace Freyr\Prescription\Issuing\Core\Physician;
 
 use Freyr\Prescription\Issuing\Core\Physician\Physician;
 use Freyr\Prescription\Issuing\Core\Medicine\Medicine;

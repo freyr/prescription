@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Claiming\Core;
 
-
 class Prescription
 {
     public function __construct(

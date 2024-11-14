@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Claiming\Core;
 
-class MedicineId
+use Freyr\Prescription\EventSourcing\Id;
+
+class MedicineId extends Id
 {
-    public function __toString(): string
-    {
-        return '';
-    }
+
 }

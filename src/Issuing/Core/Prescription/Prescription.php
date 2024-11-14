@@ -47,11 +47,11 @@ class Prescription extends AggregateRoot
         }
 
         $prescription = new self(
-            new PrescriptionId(),
+            PrescriptionId::new(),
             $patient,
             $physician,
             PrescriptionStatus::ISSUED,
-            ...$dosage,
+            ...$dosages,
         );
         $prescription->recordThat(
             new PrescriptionIssued(

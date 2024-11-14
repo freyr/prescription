@@ -6,8 +6,8 @@ namespace Freyr\Prescription\Issuing\Infrastructure;
 
 use Freyr\Prescription\EventSourcing\AggregateChanged;
 use Freyr\Prescription\Issuing\Core\Prescription\Prescription;
-use Freyr\Prescription\Issuing\Core\PrescriptionId;
-use Freyr\Prescription\Issuing\Core\PrescriptionRepository;
+use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionId;
+use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionRepository;
 
 class PrescriptionInMemoryRepository implements PrescriptionRepository
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\Issuing\ReadModel;
 
-use Freyr\Prescription\Issuing\Core\PrescriptionId;
+use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionId;
 
 final readonly class PrescriptionForPatientReadModel
 {

@@ -7,7 +7,7 @@ abstract class AggregateRoot
 {
     private array $events = [];
 
-    public static function fromStream(array $streamEvents): self
+    public static function fromStream(array $streamEvents): static
     {
         $instance = new static();
         $instance->replay($streamEvents);
