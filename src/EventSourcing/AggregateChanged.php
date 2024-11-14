@@ -1,43 +1,45 @@
 <?php
+declare(strict_types=1);
 
 namespace Freyr\Prescription\EventSourcing;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use ReflectionClass;
 
-class AggregateChanged
+readonly class AggregateChanged
 {
-    protected array $payload = [];
-
-    public static function occur(string $aggregateId, array $payload = []): self
+    public static function occur(Id $aggregateId, array $payload = []): static
     {
-        return new static($aggregateId, $payload);
-    }
-
-    public function __construct(string $aggregateId, array $payload = [])
-    {
-        $this->payload = $payload;
-        $this->payload['_uuid'] = $aggregateId;
-        $this->payload['_name'] = get_called_class();
+        $payload['_aggregate_id'] = (string) $aggregateId;
+        $payload['_id'] = (string) $aggregateId;
+        $payload['_name'] = get_called_class();
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->payload['_occurred_on'] = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $occurredOn = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $payload['_occurred_on'] = $occurredOn;
+
+        return new static(
+            Id::new(),
+            $aggregateId,
+            $occurredOn,
+            $payload
+        );
     }
 
-    public static function fromArray(array $messageData): AggregateChanged
+    public function __construct(
+        public Id $eventId,
+        public Id $aggregateId,
+        public DateTimeImmutable $occurredOn,
+        public array $payload
+    )
     {
-        $messageRef = new ReflectionClass(get_called_class());
-        /** @var AggregateChanged $message */
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $message = $messageRef->newInstanceWithoutConstructor();
-        $message->payload = $messageData;
-
-        return $message;
     }
 
-    public function payload(): array
+    public static function fromArray(array $payload): static
     {
-        return $this->payload;
+        $eventId = Id::fromString($payload['_id']);
+        $aggregateId = Id::fromString($payload['_aggregate_id']);
+        $occurredOn = new DateTimeImmutable($payload['_occurred_on'], new DateTimeZone('UTC'));
+        return new static($eventId, $aggregateId, $occurredOn, $payload);
     }
 
     public function field($key)

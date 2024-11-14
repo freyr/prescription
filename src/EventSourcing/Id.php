@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Freyr\Prescription\EventSourcing;
 
-use Ramsey\Uuid\Rfc4122\UuidV7;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -19,11 +18,18 @@ class Id
     {
         return new static(Uuid::uuid7());
     }
+
     public static function fromBinary(string $bytes): static
     {
         $uuid = Uuid::fromBytes($bytes);
         return new static($uuid);
     }
+
+    public static function fromString(string $uuid): static
+    {
+        return new static(Uuid::fromString($uuid));
+    }
+
     public function __toString(): string
     {
         return $this->id->toString();
