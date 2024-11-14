@@ -9,11 +9,11 @@ class Patient
 
     public function isInsured(): bool
     {
-
+        return true;
     }
 
     public function getId(): string
     {
-
+        return '';
     }
 }

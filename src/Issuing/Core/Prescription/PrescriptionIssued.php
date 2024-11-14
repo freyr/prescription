@@ -6,6 +6,6 @@ namespace Freyr\Prescription\Issuing\Core\Prescription;
 
 use Freyr\Prescription\EventSourcing\AggregateChanged;
 
-class PrescriptionIssued extends AggregateChanged
+readonly class PrescriptionIssued extends AggregateChanged
 {
 }

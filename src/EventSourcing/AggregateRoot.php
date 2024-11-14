@@ -38,8 +38,6 @@ abstract class AggregateRoot
         $this->apply($event);
     }
 
-    abstract public function aggregateId(): string;
-
     abstract protected function apply(AggregateChanged $event): void;
 
 }

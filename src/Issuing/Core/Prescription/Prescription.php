@@ -23,7 +23,7 @@ class Prescription extends AggregateRoot
     private array $dosages;
 
     public function __construct(
-        readonly private PrescriptionId $id,
+        readonly public PrescriptionId $id,
         readonly private Patient $patient,
         readonly private Physician $physician,
         private PrescriptionStatus $status = PrescriptionStatus::ISSUED,
@@ -54,8 +54,8 @@ class Prescription extends AggregateRoot
             ...$dosages,
         );
         $prescription->recordThat(
-            new PrescriptionIssued(
-                $prescription->aggregateId(),
+            PrescriptionIssued::occur(
+                $prescription->id,
                 [
                     'patientId' => $patient->getId(),
                     'code' => $prescription->code
@@ -71,11 +71,6 @@ class Prescription extends AggregateRoot
             throw new CannotCancelPrescriptionException();
         }
         $this->status = PrescriptionStatus::CANCELLED;
-    }
-
-    public function aggregateId(): string
-    {
-        return (string)$this->id;
     }
 
     protected function apply(AggregateChanged $event): void
