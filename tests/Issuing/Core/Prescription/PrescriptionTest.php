@@ -10,15 +10,35 @@ use Freyr\Prescription\Issuing\Core\Medicine\MedicineRepository;
 use Freyr\Prescription\Issuing\Core\Patient\Patient;
 use Freyr\Prescription\Issuing\Core\Physician\Physician;
 use Freyr\Prescription\Issuing\Core\Prescription\Prescription;
-use Freyr\Prescription\Issuing\Core\Prescription\PrescriptionRepository;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class PrescriptionTest extends TestCase
 {
 
-    #[test]
-    public function shouldCheckIfPrescriptionIsIssued(): void
+
+    public static function providePrescriptionConfiguration(): Generator
+    {
+        yield 'sciezka 1' => [
+
+            'checkResult' => true,
+            'assertSwitch' => 'assert',
+
+        ];
+        yield 'sciezka dwa' => [
+            'checkResult' => false,
+            'assertSwitch' => 'exception',
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('providePrescriptionConfiguration')]
+    #[TestDox('Polska wersja')]
+    public function shouldCheckIfPrescriptionIsIssued(bool $checkResult, string $assertSwitch): void
     {
         // Given
         $repository = $this->getMockBuilder(MedicineRepository::class)
@@ -28,7 +48,10 @@ class PrescriptionTest extends TestCase
         $repository
             ->expects(self::once())
             ->method('check')
-            ->willReturn(true);
+            ->willReturn($checkResult);
+        if ($assertSwitch === 'exception') {
+            $this->expectException(RuntimeException::class);
+        }
 
         $patient = new Patient();
         $physician = new Physician();
@@ -45,8 +68,38 @@ class PrescriptionTest extends TestCase
         );
 
         // then
+        if ($assertSwitch === 'assert') {
+            self::assertNotNull($response);
+        }
+    }
+
+
+    #[Test]
+    public function shouldHandleEmptyDosage(): void
+    {
+        // Given
+        $repository = $this->getMockBuilder(MedicineRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $repository
+            ->expects(self::atLeastOnce())
+            ->method('check')
+            ->willReturn(true);
+
+        $patient = new Patient();
+        $physician = new Physician();
+        $dosages = [];
+
+        // when
+        $response = Prescription::issue(
+            $repository,
+            $patient,
+            $physician,
+            ...$dosages
+        );
+
+        // then
         self::assertNotNull($response);
-
-
     }
 }
